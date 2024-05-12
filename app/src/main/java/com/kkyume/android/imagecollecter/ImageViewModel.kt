@@ -3,7 +3,6 @@ package com.kkyume.android.imagecollecter
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kkyume.android.imagecollecter.model.image.ImageRequest
 import com.kkyume.android.imagecollecter.model.image.ImageResponse
 import com.kkyume.android.imagecollecter.model.video.VideoRequest
 import com.kkyume.android.imagecollecter.model.video.VideoResponse
@@ -29,11 +28,12 @@ class ImageViewModel(application: Application){
         get() = mVideoMutableLiveData
 
 
-    fun requestImageResponse(imageRequest: ImageRequest) {
+    fun requestImageResponse() {
         val call = RetrofitService.getInterface().getImage("iu", "recency", 10, 10)
         call.enqueue(object : Callback<ImageResponse> {
             override fun onResponse(call: Call<ImageResponse>, response: Response<ImageResponse>) {
                 println(">>>>> 성공")
+                println(">>>> response${response.body()}")
             }
 
             override fun onFailure(call: Call<ImageResponse>, t: Throwable) {

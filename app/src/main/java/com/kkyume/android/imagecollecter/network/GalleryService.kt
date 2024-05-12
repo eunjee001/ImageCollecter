@@ -1,6 +1,5 @@
 package com.kkyume.android.imagecollecter.network
 
-import com.kkyume.android.imagecollecter.model.image.ImageRequest
 import com.kkyume.android.imagecollecter.model.image.ImageResponse
 import com.kkyume.android.imagecollecter.model.video.VideoRequest
 import com.kkyume.android.imagecollecter.model.video.VideoResponse
