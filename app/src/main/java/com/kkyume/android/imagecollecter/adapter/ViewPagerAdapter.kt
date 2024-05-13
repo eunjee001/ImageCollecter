@@ -1,4 +1,4 @@
-package com.kkyume.android.imagecollecter
+package com.kkyume.android.imagecollecter.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

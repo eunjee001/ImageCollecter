@@ -3,13 +3,18 @@ package com.kkyume.android.imagecollecter
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import com.kkyume.android.imagecollecter.adapter.ViewPagerAdapter
 import com.kkyume.android.imagecollecter.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private var mViewModel: ImageViewModel? = null
     private lateinit var binding : ActivityMainBinding
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,25 +22,14 @@ class MainActivity : AppCompatActivity() {
 
         init()
 
-        initLiveData()
     }
-    private fun init(){
-        mViewModel =  (this as? Activity)?.let { ImageViewModel(it.application) }
-        mViewModel?.requestImageResponse()
-
+    private fun init() {
         val adapter = ViewPagerAdapter(supportFragmentManager)
         adapter.addFragment(SearchFragment(), "검색결과")
         adapter.addFragment(StorageFragment(), "내 보관함")
         binding.viewPager.adapter = adapter
         binding.tabLayout.setupWithViewPager(binding.viewPager)
+
     }
-    private fun initLiveData() {
-        mViewModel?.let { viewModel ->
-            viewModel.imageLiveData.observe(this as LifecycleOwner) { res ->
-                res?.let {
-                    println(">>>" + it.meta)
-                }
-            }
-        }
-    }
+
 }

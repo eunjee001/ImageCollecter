@@ -3,6 +3,7 @@ package com.kkyume.android.imagecollecter
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kkyume.android.imagecollecter.model.CombinedListData
 import com.kkyume.android.imagecollecter.model.image.ImageResponse
 import com.kkyume.android.imagecollecter.model.video.VideoRequest
 import com.kkyume.android.imagecollecter.model.video.VideoResponse
@@ -18,7 +19,7 @@ class ImageViewModel(application: Application){
 
     // 간편결제 메인 MutableLiveData
     private var mVideoMutableLiveData = MutableLiveData<VideoResponse>()
-
+    private var combinedList = arrayListOf<CombinedListData>()
 
 
     val imageLiveData : LiveData<ImageResponse>
@@ -28,23 +29,31 @@ class ImageViewModel(application: Application){
         get() = mVideoMutableLiveData
 
 
-    fun requestImageResponse() {
-        val call = RetrofitService.getInterface().getImage("iu", "recency", 10, 10)
+    fun requestImageResponse(searchData: String) {
+        val call = RetrofitService.getInterface().getImage(searchData, "recency", 10, 10)
         call.enqueue(object : Callback<ImageResponse> {
             override fun onResponse(call: Call<ImageResponse>, response: Response<ImageResponse>) {
-                println(">>>>> 성공")
-                println(">>>> response${response.body()}")
+                println(">>>> imageResponse" +response.body().toString())
+                response.body()?.let {
+                    mImageMutableLiveData.value = it
+                }
             }
 
             override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
                 println(">>>>> 실패")
+                t.printStackTrace()
 
             }
         })
     }
-
-    fun requestVideoResponse(videoRequest: VideoRequest) {
-        val call = RetrofitService.getInterface().getVideo("iu", "recency", 10, 10)
+//    private fun combinedList(imageResponse : ImageResponse){
+//        for (i in imageResponse.documents){
+////            combinedList.add(CombinedListData(i.thumbnailUrl, i.displaySitename, i.collection, i.docUrl, i.datetime))
+//        }
+//        println(">>>> combinedList " + combinedList)
+//    }
+    fun requestVideoResponse(searchData: String) {
+        val call = RetrofitService.getInterface().getVideo(searchData, "recency", 10, 10)
         call.enqueue(object : Callback<VideoResponse> {
             override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
                 println(">>>>> 성공")
