@@ -6,17 +6,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kkyume.android.imagecollecter.databinding.ItemSearchImageBinding
+import com.kkyume.android.imagecollecter.model.CombinedListData
 import com.kkyume.android.imagecollecter.model.image.ImageResponse
 
 
-class SearchImageAdapter : ListAdapter<ImageResponse,SearchImageAdapter.SearchImageViewHolder>(diffUtil) {
+class SearchImageAdapter : ListAdapter<CombinedListData,SearchImageAdapter.SearchImageViewHolder>(diffUtil) {
     companion object{
-        val diffUtil = object: DiffUtil.ItemCallback<ImageResponse>() {
-            override fun areContentsTheSame(oldItem: ImageResponse, newItem: ImageResponse) =
+        val diffUtil = object: DiffUtil.ItemCallback<CombinedListData>() {
+            override fun areContentsTheSame(oldItem: CombinedListData, newItem: CombinedListData) =
                 oldItem == newItem
 
-            override fun areItemsTheSame(oldItem: ImageResponse, newItem: ImageResponse) =
-                oldItem.documents == newItem.documents
+            override fun areItemsTheSame(oldItem: CombinedListData, newItem: CombinedListData) =
+                oldItem == newItem
         }
     }
 
@@ -29,9 +30,8 @@ class SearchImageAdapter : ListAdapter<ImageResponse,SearchImageAdapter.SearchIm
         holder.bind(currentList[position])
     }
     inner class SearchImageViewHolder(private val binding:ItemSearchImageBinding) : ViewHolder(binding.root){
-        fun bind(item : ImageResponse){
-
-
+        fun bind(item : CombinedListData){
+            binding.tvDate.text = item.dateTime.toString()
         }
     }
 

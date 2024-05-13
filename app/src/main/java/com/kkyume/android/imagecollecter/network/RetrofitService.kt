@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitService {
     private val retrofitClient: Retrofit.Builder by lazy {
@@ -14,6 +15,9 @@ object RetrofitService {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .addHeader("Content-Type", "application/json;charset=UTF-8")

@@ -1,24 +1,32 @@
 package com.kkyume.android.imagecollecter.model.image
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.text.DateFormat
+import java.util.Date
 
 @Serializable
 data class Image_Document(
-    @SerialName("collection")
+    @SerializedName("collection")
     val collection: String?,
-    @SerialName("datetime")
-    val datetime: String?,
-    @SerialName("display_sitename")
+    @SerializedName("datetime")
+    val datetime: Date?,
+    @SerializedName("display_sitename")
     val displaySitename: String?,
-    @SerialName("doc_url")
+    @SerializedName("doc_url")
     val docUrl: String?,
-    @SerialName("height")
+    @SerializedName("height")
     val height: Int?,
-    @SerialName("image_url")
+    @SerializedName("image_url")
     val imageUrl: String?,
-    @SerialName("thumbnail_url")
+    @SerializedName("thumbnail_url")
     val thumbnailUrl: String?,
-    @SerialName("width")
-    val width: Int?
+    @SerializedName("width")
+    val width: Int?,
+
+
+
+
+
 )

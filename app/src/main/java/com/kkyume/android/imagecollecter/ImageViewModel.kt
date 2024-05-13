@@ -12,7 +12,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ImageViewModel(application: Application){
+class ImageViewModel(){
 
     // 주소명으로 시군구코드 조회 MutableLiveData
     private var mImageMutableLiveData = MutableLiveData<ImageResponse>()
@@ -30,10 +30,10 @@ class ImageViewModel(application: Application){
 
 
     fun requestImageResponse(searchData: String) {
-        val call = RetrofitService.getInterface().getImage(searchData, "recency", 10, 10)
+        val call = RetrofitService.getInterface().getImage(searchData, "recency", 10, 20)
         call.enqueue(object : Callback<ImageResponse> {
             override fun onResponse(call: Call<ImageResponse>, response: Response<ImageResponse>) {
-                println(">>>> imageResponse" +response.body().toString())
+                println(">>>> imageResponse" +response.body())
                 response.body()?.let {
                     mImageMutableLiveData.value = it
                 }
