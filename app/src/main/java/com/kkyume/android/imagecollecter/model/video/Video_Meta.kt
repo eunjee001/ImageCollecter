@@ -1,15 +1,16 @@
 package com.kkyume.android.imagecollecter.model.video
 
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Video_Meta(
-    @SerialName("is_end")
+    @SerializedName("is_end")
     val isEnd: Boolean,
-    @SerialName("pageable_count")
+    @SerializedName("pageable_count")
     val pageableCount: Int,
-    @SerialName("total_count")
+    @SerializedName("total_count")
     val totalCount: Int
 )

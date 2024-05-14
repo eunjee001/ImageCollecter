@@ -1,13 +1,16 @@
 package com.kkyume.android.imagecollecter
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
+import com.kkyume.android.imagecollecter.adapter.SearchImageAdapter
 import com.kkyume.android.imagecollecter.model.CombinedListData
 import com.kkyume.android.imagecollecter.model.image.ImageResponse
-import com.kkyume.android.imagecollecter.model.video.VideoRequest
 import com.kkyume.android.imagecollecter.model.video.VideoResponse
 import com.kkyume.android.imagecollecter.network.RetrofitService
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,7 +23,8 @@ class ImageViewModel(){
     // 간편결제 메인 MutableLiveData
     private var mVideoMutableLiveData = MutableLiveData<VideoResponse>()
     private var combinedList = arrayListOf<CombinedListData>()
-
+    private var currentPage = 1
+    private var isEnd = false
 
     val imageLiveData : LiveData<ImageResponse>
         get() = mImageMutableLiveData
@@ -29,41 +33,42 @@ class ImageViewModel(){
         get() = mVideoMutableLiveData
 
 
-    fun requestImageResponse(searchData: String) {
-        val call = RetrofitService.getInterface().getImage(searchData, "recency", 10, 20)
+    fun requestImageResponse(searchData: String, currentPage : Int, combinedList:ArrayList<CombinedListData>, searchAdapter : SearchImageAdapter) {
+        val call = RetrofitService.getInterface().getImage(searchData, "recency", currentPage, 10)
         call.enqueue(object : Callback<ImageResponse> {
             override fun onResponse(call: Call<ImageResponse>, response: Response<ImageResponse>) {
-                println(">>>> imageResponse" +response.body())
                 response.body()?.let {
                     mImageMutableLiveData.value = it
+                    isEnd = it.meta.isEnd
+                    searchAdapter.submitList(combinedList)
                 }
             }
 
             override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-                println(">>>>> 실패")
+                t.printStackTrace()
+            }
+        })
+    }
+
+    fun requestVideoResponse(searchData: String, currentPage : Int, combinedList:ArrayList<CombinedListData>, searchAdapter : SearchImageAdapter) {
+        val call = RetrofitService.getInterface().getVideo(searchData, "recency", currentPage, 10)
+        call.enqueue(object : Callback<VideoResponse> {
+            override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
+                response.body()?.let {
+                    mVideoMutableLiveData.value = it
+                    isEnd = it.meta.isEnd
+                    searchAdapter.submitList(combinedList)
+
+                    println(">>> cur" +currentPage)
+                }
+            }
+
+            override fun onFailure(call: Call<VideoResponse>, t: Throwable) {
                 t.printStackTrace()
 
             }
         })
     }
-//    private fun combinedList(imageResponse : ImageResponse){
-//        for (i in imageResponse.documents){
-////            combinedList.add(CombinedListData(i.thumbnailUrl, i.displaySitename, i.collection, i.docUrl, i.datetime))
-//        }
-//        println(">>>> combinedList " + combinedList)
-//    }
-    fun requestVideoResponse(searchData: String) {
-        val call = RetrofitService.getInterface().getVideo(searchData, "recency", 10, 10)
-        call.enqueue(object : Callback<VideoResponse> {
-            override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
-                println(">>>>> 성공")
-            }
 
-            override fun onFailure(call: Call<VideoResponse>, t: Throwable) {
-                println(">>>>> 실패")
-
-            }
-        })
-    }
 
 }
