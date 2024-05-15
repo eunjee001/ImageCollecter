@@ -16,17 +16,29 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:background="@color/white"
+            app:tabTextColor="@color/my_tab_text_color"
+            app:tabIndicatorColor="@color/color_222222"
+            app:tabPaddingTop="24dp"
+            app:tabTextAppearance="@style/MyCustomTabTextAppearance"
+            app:tabIndicatorFullWidth="true"
+            android:layout_marginHorizontal="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dddddd"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout"/>
 
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/view_pager"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -25,11 +25,10 @@ class MainActivity : AppCompatActivity() {
     }
     private fun init() {
         val adapter = ViewPagerAdapter(supportFragmentManager)
-        adapter.addFragment(SearchFragment(), "검색결과")
-        adapter.addFragment(StorageFragment(), "내 보관함")
+        adapter.addFragment(SearchFragment(), "검색")
+        adapter.addFragment(StorageFragment(), "즐겨찾기")
         binding.viewPager.adapter = adapter
         binding.tabLayout.setupWithViewPager(binding.viewPager)
 
     }
-
 }
