@@ -10,7 +10,7 @@ data class CombinedStoredListData(
     val category: String?,
     val contents: String?,
     val date: Date?,
-    val type: ItemType?, // 이미지 또는 비디오를 나타내는 타입
-    val id: String?, // 고유 식별자
+    val type: ItemType?,
+    val id: String?,
     val isSelect : Boolean = true
 )

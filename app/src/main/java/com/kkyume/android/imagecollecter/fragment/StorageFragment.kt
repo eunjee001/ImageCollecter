@@ -1,4 +1,4 @@
-package com.kkyume.android.imagecollecter
+package com.kkyume.android.imagecollecter.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.kkyume.android.imagecollecter.PreviewActivity
+import com.kkyume.android.imagecollecter.R
 import com.kkyume.android.imagecollecter.adapter.StorageImageAdapter
 import com.kkyume.android.imagecollecter.databinding.FragmentStorageImageBinding
 import com.kkyume.android.imagecollecter.model.CombinedStoredListData
@@ -56,7 +58,7 @@ class StorageFragment : Fragment(), StorageImageAdapter.OnClickListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         sharedPreferences =
-            context.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
+            context.getSharedPreferences("STORAGE_ITEMS", Context.MODE_PRIVATE)
     }
 
     override fun onPause() {
@@ -90,9 +92,7 @@ class StorageFragment : Fragment(), StorageImageAdapter.OnClickListener {
         val json = gson.toJson(item)
         editor?.putString(item.contents!!, json) // 아이템의 URL을 키로 사용
         editor?.apply()
-        println(">>>> sharedPreferences?.all" + sharedPreferences?.all)
 
-        // RecyclerView 갱신
         updateRecyclerView()
 
     }
@@ -119,8 +119,6 @@ class StorageFragment : Fragment(), StorageImageAdapter.OnClickListener {
             savePrefsStorageItems(favoriteItems)
             updateRecyclerView()
         } else {
-            // 인덱스가 범위를 벗어날 경우 처리
-            // 예를 들어, 인덱스가 유효하지 않을 때 아무것도 하지 않거나, 에러를 로그에 기록할 수 있습니다.
             println("Invalid index: $position")
         }
     }

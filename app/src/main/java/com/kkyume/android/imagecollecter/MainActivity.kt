@@ -1,15 +1,12 @@
 package com.kkyume.android.imagecollecter
 
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
 import com.kkyume.android.imagecollecter.adapter.ViewPagerAdapter
 import com.kkyume.android.imagecollecter.databinding.ActivityMainBinding
+import com.kkyume.android.imagecollecter.fragment.SearchFragment
+import com.kkyume.android.imagecollecter.fragment.StorageFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding

@@ -1,4 +1,4 @@
-package com.kkyume.android.imagecollecter
+package com.kkyume.android.imagecollecter.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -16,10 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.kkyume.android.imagecollecter.PreviewActivity
+import com.kkyume.android.imagecollecter.R
 import com.kkyume.android.imagecollecter.adapter.SearchImageAdapter
 import com.kkyume.android.imagecollecter.databinding.FragmentSearchImageBinding
 import com.kkyume.android.imagecollecter.model.CombinedListData
 import com.kkyume.android.imagecollecter.model.CombinedStoredListData
+import com.kkyume.android.imagecollecter.viewModel.ImageViewModel
 
 class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
 
@@ -34,9 +37,9 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
     private val sharedPreferencesListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == "STORAGE_ITEMS") {
-                // SharedPreferences 변경 시 RecyclerView 업데이트
                 updateRecyclerView()
-            }        }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +52,7 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
             container,
             false
         )
-        binding.view.visibility= View.GONE
+        binding.view.visibility = View.GONE
         initRecyclerView()
         initViewModel()
         initEditTextListener()
@@ -59,17 +62,19 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        initViewModel()
+        searchAdapter.submitList(currentItems)
         requireActivity().getPreferences(Context.MODE_PRIVATE)
             .registerOnSharedPreferenceChangeListener(sharedPreferencesListener)
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        sharedPreferences = context.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences =
+            context.getSharedPreferences("STORAGE_ITEMS", Context.MODE_PRIVATE)
     }
+
     override fun onPause() {
         super.onPause()
-        // SharedPreferences 변경 감지 리스너 해제
         requireActivity().getPreferences(Context.MODE_PRIVATE)
             .unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener)
     }
@@ -77,49 +82,55 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
     private fun initRecyclerView() {
         searchAdapter = SearchImageAdapter(requireContext(), this)
         binding.rvSearchImage.apply {
-
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(context)
         }
+
     }
+
     private fun updateRecyclerView() {
         val itemList = getPrefsStorageItems()
         if (itemList.isEmpty()) {
             binding.rvSearchImage.visibility = View.GONE
         } else {
-            searchAdapter.submitList(itemList)
+            searchAdapter.submitList(currentItems)
             binding.rvSearchImage.visibility = View.VISIBLE
+
         }
     }
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this).get(ImageViewModel::class.java)
         viewModel.combinedListLiveData.observe(viewLifecycleOwner) { newItems ->
-            // 새로운 아이템들만 추가하여 RecyclerView를 업데이트
             currentItems.addAll(newItems)
             searchAdapter.submitList(currentItems.toList())
             isLoading = false
         }
+        val itemList = getPrefsStorageItems()
+
+        for (item in currentItems) {
+            val isBookmarked = itemList.any { it.id == item.id }
+            searchAdapter.ivFavorite().isSelected = isBookmarked
+        }
+        searchAdapter.notifyDataSetChanged()
     }
+
     private fun initEditTextListener() {
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // 입력 전에 수행할 작업
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 텍스트가 변경될 때마다 수행할 작업
                 val searchText = s.toString()
                 currentPage = 1
                 binding.tvPageNumber.text = currentPage.toString()
                 binding.view.visibility = View.VISIBLE
                 currentItems.clear()
-                viewModel.requestImageResponse(searchText,currentPage)
-                viewModel.requestVideoResponse(searchText,currentPage)
+                viewModel.requestImageResponse(searchText, currentPage)
+                viewModel.requestVideoResponse(searchText, currentPage)
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // 입력 후에 수행할 작업
             }
         })
         binding.ivDelete.setOnClickListener {
@@ -127,6 +138,7 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
             binding.rvSearchImage.removeAllViewsInLayout()
         }
     }
+
     private fun initScrollListener() {
         binding.rvSearchImage.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -142,6 +154,7 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
             }
         })
     }
+
     private fun updatePageNumber() {
         binding.tvPageNumber.text = currentPage.toString()
     }
@@ -150,8 +163,8 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
         isLoading = true
         currentPage++
         val searchText = binding.etSearch.text.toString()
-        viewModel.requestImageResponse(searchText,currentPage)
-        viewModel.requestVideoResponse(searchText,currentPage)
+        viewModel.requestImageResponse(searchText, currentPage)
+        viewModel.requestVideoResponse(searchText, currentPage)
         updatePageNumber()
     }
 
@@ -185,7 +198,16 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
         if (findItem == null) {
             favoriteItems.add(itemList)
             savePrefsStorageItems(favoriteItems)
-            val stored = CombinedStoredListData(itemList?.thumbnailUrl, itemList?.title, itemList?.category, itemList?.contents, itemList?.date,itemList?.type, itemList?.id, true)
+            val stored = CombinedStoredListData(
+                itemList.thumbnailUrl,
+                itemList.title,
+                itemList.category,
+                itemList.contents,
+                itemList.date,
+                itemList.type,
+                itemList.id,
+                true
+            )
             storedItem.add(stored)
         }
     }
@@ -195,6 +217,7 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
         sharedPreferences?.edit()?.putString("STORAGE_ITEMS", jsonString)?.apply()
 
     }
+
     private fun getPrefsStorageItems(): List<CombinedListData> {
 
         val jsonString = sharedPreferences?.getString("STORAGE_ITEMS", "")
@@ -212,7 +235,16 @@ class SearchFragment : Fragment(), SearchImageAdapter.OnClickListener {
 
         if (findItem != null) {
             favoriteItems.remove(findItem)
-            val stored = CombinedStoredListData(findItem?.thumbnailUrl, findItem?.title, findItem?.category, findItem?.contents, findItem?.date,findItem?.type, findItem?.id, false)
+            val stored = CombinedStoredListData(
+                findItem?.thumbnailUrl,
+                findItem?.title,
+                findItem?.category,
+                findItem?.contents,
+                findItem?.date,
+                findItem?.type,
+                findItem?.id,
+                false
+            )
             storedItem.remove(stored)
             savePrefsStorageItems(favoriteItems)
         }

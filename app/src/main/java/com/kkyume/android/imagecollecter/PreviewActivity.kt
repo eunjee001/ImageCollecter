@@ -1,11 +1,9 @@
 package com.kkyume.android.imagecollecter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
@@ -13,8 +11,6 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.kkyume.android.imagecollecter.databinding.ActivityPreviewBinding
 import com.kkyume.android.imagecollecter.model.CombinedStoredListData
-import com.kkyume.android.imagecollecter.model.ItemType
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -35,27 +31,27 @@ class PreviewActivity : AppCompatActivity() {
 
         init()
         binding.ivBack.setOnClickListener {
-            onBackPressed()
+            finish()
         }
 
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun init(){
-        sharedPreferences = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences = this.getSharedPreferences("STORAGE_ITEMS", Context.MODE_PRIVATE)
         title = intent.getStringExtra("title")
         thumbUrl = intent.getStringExtra("thumbnailUrl")
         position = intent.getIntExtra("position", -1)
         val isSelect = intent.getBooleanExtra("isSelect", false)
         type = intent.getStringExtra("imageType")
-         date = intent.getStringExtra("date")
+        date = intent.getStringExtra("date")
         val format = SimpleDateFormat("yyyy-MM-dd") // 입력된 문자열의 날짜 형식 지정
         dateFormat = date?.let { format.parse(it) } // 문자열을 Date 객체로 변환
         binding.ivFavorite.isSelected = isSelect
         binding.ivFavorite.setOnClickListener {
             if (!isSelect){
+                binding.ivFavorite.isSelected = true
                 saveItemToSharedPreferences()
-                finish()
-
             }else{
                 removeItemFromSharedPreferences(position)
                 finish()
